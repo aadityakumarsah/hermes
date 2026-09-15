@@ -1,0 +1,10 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+  - 'channels/*'
+  - 'extensions/*'
+allowBuilds:
+  esbuild: set this to true or false
+  esbuild@0.18.20: true
+  esbuild@0.19.12: true
+  esbuild@0.28.2: true
