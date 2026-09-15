@@ -32,5 +32,4 @@ pnpm-debug.log*
 coverage/
 .nyc_output/
 
-# OpenClaw reference clone (not part of this project)
-openclaw/
+
