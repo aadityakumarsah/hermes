@@ -7,12 +7,15 @@ import { HERMES_VERSION } from '@hermes/core';
 import type { DatabaseClient, HermesDatabase, RedisBus } from '@hermes/storage';
 import { JoseTokenService } from '@hermes/auth';
 import { authMiddleware } from '@hermes/auth';
+import { HashEmbeddingProvider, MemoryManager, type EmbeddingProvider } from '@hermes/memory';
+import { memoryRoutes } from './routes/memories.js';
 
 export interface ServerDeps {
   config: HermesConfig;
   logger: Logger;
   db: DatabaseClient;
   redisBus: RedisBus;
+  embeddings?: EmbeddingProvider;
 }
 
 export interface HermesAppEnv {
@@ -26,6 +29,7 @@ export interface HermesAppEnv {
     db: HermesDatabase;
     redis: RedisBus['redis'];
     config: HermesConfig;
+    memory?: MemoryManager;
     'hermes.auth': { user?: { sub: string; tenantId?: string; role?: string } } | undefined;
   };
 }
@@ -40,6 +44,11 @@ export interface BootResult {
 export async function startServer(deps: ServerDeps): Promise<BootResult> {
   const { config, logger, db, redisBus } = deps;
   const tokenService = new JoseTokenService(config.auth);
+  const memoryManager = new MemoryManager({
+    db: db.db,
+    embeddings: deps.embeddings ?? new HashEmbeddingProvider(),
+    logger,
+  });
 
   const app = new Hono<HermesAppEnv>();
   const nodeWs = createNodeWebSocket({ app });
@@ -50,6 +59,7 @@ export async function startServer(deps: ServerDeps): Promise<BootResult> {
     c.set('db', db.db);
     c.set('redis', redisBus.redis);
     c.set('config', config);
+    c.set('memory', memoryManager);
     await next();
   });
 
@@ -80,6 +90,8 @@ export async function startServer(deps: ServerDeps): Promise<BootResult> {
     const auth = c.get('hermes.auth');
     return c.json({ name: 'hermes', version: HERMES_VERSION, authenticated: Boolean(auth?.user) });
   });
+
+  app.route('/api/v1/memories', memoryRoutes);
 
   app.get(
     '/ws',

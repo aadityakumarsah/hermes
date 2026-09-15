@@ -11,6 +11,7 @@
     { "path": "../../packages/config" },
     { "path": "../../packages/observability" },
     { "path": "../../packages/storage" },
-    { "path": "../../packages/auth" }
+    { "path": "../../packages/auth" },
+    { "path": "../../packages/memory" }
   ]
 }

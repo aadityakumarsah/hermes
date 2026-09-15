@@ -8,6 +8,13 @@
       "when": 1789468511983,
       "tag": "0000_closed_karnak",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789478005894,
+      "tag": "0001_lying_tombstone",
+      "breakpoints": true
     }
   ]
 }
