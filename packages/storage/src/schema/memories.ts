@@ -1,9 +1,12 @@
 import { pgTable, uuid, varchar, text, timestamp, jsonb, real, customType, index } from 'drizzle-orm/pg-core';
 import { tenants } from './tenants.js';
 
+// Matches OpenAI text-embedding-3-small dimensions.
+export const EMBEDDING_DIMENSIONS = 1536;
+
 const vector = customType<{ data: number[]; driverData: number[] }>({
   dataType() {
-    return 'vector';
+    return `vector(${EMBEDDING_DIMENSIONS})`;
   },
   toDriver(value): number[] {
     return value;
